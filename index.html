@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bookstore</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-brand">📚 Bookstore</div>
+
+    <div class="nav-links">
+      <a href="#" class="nav-link active" data-view="home">🏠 Home</a>
+      <a href="#" class="nav-link" data-view="cart">🛒 Cart <span id="cart-count">(0)</span></a>
+      <a href="#" class="nav-link" data-view="wishlist">❤️ Wishlist <span id="wishlist-count" class="count-badge hidden">(0)</span></a>
+      <a href="#" class="nav-link" data-view="orders">📦 My Orders</a>
+    </div>
+
+    <div class="nav-auth">
+      <div id="auth-logged-out">
+        <button class="btn btn-outline" id="login-btn">Log In</button>
+        <button class="btn btn-primary" id="signup-btn">Sign Up</button>
+      </div>
+
+      <div id="auth-logged-in" class="hidden">
+        <span id="user-greeting"></span>
+        <button class="btn btn-secondary hidden" id="add-book-btn">➕ Add Book</button>
+        <button class="btn btn-outline" id="logout-btn">🚪 Log Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HOME -->
+    <section id="view-home">
+      <div class="hero">
+        <h1>Find Your Next<br/><span>Great Read</span></h1>
+        <p>Thousands of books, delivered to your door.</p>
+
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Search books…" />
+          <button class="btn btn-primary" id="search-btn">Search</button>
+        </div>
+
+        <div class="category-chips">
+          <button class="chip active" data-cat="">All</button>
+          <button class="chip" data-cat="Fiction">Fiction</button>
+          <button class="chip" data-cat="Non-Fiction">Non-Fiction</button>
+          <button class="chip" data-cat="Science">Science</button>
+          <button class="chip" data-cat="History">History</button>
+          <button class="chip" data-cat="Technology">Technology</button>
+        </div>
+      </div>
+
+      <div class="books-grid" id="books-grid">
+        <div class="loading-spinner">Loading books…</div>
+      </div>
+    </section>
+
+    <!-- ORDERS -->
+    <section id="view-orders" class="hidden">
+      <h2 class="section-title">My Orders</h2>
+      <div id="orders-list">
+        <p class="empty-state">Please log in to view your orders.</p>
+      </div>
+    </section>
+
+    <!-- CART -->
+    <section id="view-cart" class="hidden">
+      <h2 class="section-title">Shopping Cart</h2>
+      <div id="cart-list">
+        <p class="empty-state">Your cart is empty.</p>
+      </div>
+      <div id="cart-total" class="hidden">
+        <p>Total: ₹<span id="cart-total-amount">0</span></p>
+        <button class="btn btn-primary" id="checkout-btn">Place Order</button>
+      </div>
+    </section>
+
+    <!-- WISHLIST -->
+    <section id="view-wishlist" class="hidden">
+      <h2 class="section-title">My Wishlist</h2>
+      <div id="wishlist-list">
+        <p class="empty-state">Your wishlist is empty.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOOK MODAL -->
+  <div id="modal-book" class="modal hidden">
+    <div class="modal-content">
+      <button class="modal-close" id="close-book-modal">✕</button>
+      <div id="modal-book-body"></div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div id="modal-auth" class="modal hidden">
+    <div class="modal-content modal-auth-content">
+
+      <button class="modal-close" id="close-auth-modal">✕</button>
+
+      <div id="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Log In</button>
+        <button class="auth-tab" data-tab="signup">Sign Up</button>
+      </div>
+
+      <form id="auth-form">
+
+        <div id="signup-name-field" class="hidden">
+          <label>Name</label>
+          <input type="text" id="auth-name" placeholder="Your name" />
+        </div>
+
+        <label>Email</label>
+        <input type="email" id="auth-email" required />
+
+        <label>Password</label>
+        <input type="password" id="auth-password" required />
+
+        <p id="auth-error" class="error-text hidden"></p>
+
+        <button type="submit" class="btn btn-primary full-width" id="auth-submit-btn">
+          Log In
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD BOOK MODAL -->
+  <div id="modal-add-book" class="modal hidden">
+    <div class="modal-content modal-auth-content">
+      <button class="modal-close" id="close-add-book-modal">✕</button>
+      <h2>Add New Book</h2>
+      <form id="add-book-form">
+        <label>Title</label>
+        <input type="text" id="book-title" required />
+
+        <label>Author</label>
+        <input type="text" id="book-author" required />
+
+        <label>Price</label>
+        <input type="number" id="book-price" min="0" step="0.01" required />
+
+        <label>Category</label>
+        <input type="text" id="book-category" placeholder="e.g. Fiction" required />
+
+        <label>Stock</label>
+        <input type="number" id="book-stock" min="0" value="10" required />
+
+        <label>Description</label>
+        <textarea id="book-description" rows="4" placeholder="Book description"></textarea>
+
+        <label>Image URL (optional)</label>
+        <input type="url" id="book-image" placeholder="https://example.com/book.jpg" />
+
+        <button type="submit" class="btn btn-primary full-width">Add Book</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ✅ USER INFO (for debug, optional) -->
+  <p id="user-info" style="text-align:center; margin-top:10px;"></p>
+
+  <!-- SCRIPT -->
+  <script type="module" src="script.js"></script>
+
+</body>
+</html>
