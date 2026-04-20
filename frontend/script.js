@@ -58,6 +58,34 @@ console.log("Firebase config loaded:", firebaseConfig);
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+const DEBUG_API = true;
+function debugLog(...args) {
+  if (DEBUG_API && console && console.debug) {
+    console.debug("[Bookstore DEBUG]", ...args);
+  }
+}
+
+async function debugFetch(name, url, options = {}) {
+  debugLog("Request", name, { url, options });
+  const res = await fetch(url, options);
+  const contentType = res.headers.get("content-type") || "";
+  let body = null;
+  try {
+    if (contentType.includes("application/json")) {
+      body = await res.clone().json();
+    } else {
+      body = await res.clone().text();
+    }
+  } catch (err) {
+    body = "<unavailable>";
+  }
+  debugLog("Response", name, { url, status: res.status, ok: res.ok, body });
+  return res;
+}
+
+window.debugLog = debugLog;
+window.DEBUG_API = DEBUG_API;
+
 let currentUser = null;
 let activeView = "home";
 let activeTab = "login";
@@ -263,7 +291,7 @@ async function fetchBooks() {
     if (categoryFilter) params.set("category", categoryFilter);
     if (searchQuery) params.set("search", searchQuery);
 
-    const res = await fetch(`${API.books.get()}?${params.toString()}`);
+    const res = await debugFetch("booksGet", `${API.books.get()}?${params.toString()}`);
     if (!res.ok) throw new Error("Unable to load books");
 
     const books = await res.json();
@@ -324,7 +352,7 @@ async function fetchWishlist() {
   }
 
   try {
-    const res = await fetch(`${API.wishlist.get()}?user_id=${currentUser.uid}`);
+    const res = await debugFetch("wishlistGet", `${API.wishlist.get()}?user_id=${currentUser.uid}`);
     if (!res.ok) throw new Error("Unable to load wishlist");
 
     const items = await res.json();
@@ -370,7 +398,7 @@ async function addToWishlist(bookId, title) {
   }
 
   try {
-    const res = await fetch(API.wishlist.add(), {
+    const res = await debugFetch("wishlistAdd", API.wishlist.add(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_id: currentUser.uid, book_id: bookId })
@@ -398,7 +426,7 @@ async function removeFromWishlist(bookId) {
   }
 
   try {
-    const res = await fetch(`${API.wishlist.remove()}?user_id=${currentUser.uid}&book_id=${bookId}`, {
+    const res = await debugFetch("wishlistRemove", `${API.wishlist.remove()}?user_id=${currentUser.uid}&book_id=${bookId}`, {
       method: "DELETE"
     });
 
@@ -422,7 +450,7 @@ async function fetchOrders() {
   }
 
   try {
-    const res = await fetch(`${API.orders.get()}?user_id=${currentUser.uid}`);
+    const res = await debugFetch("ordersGet", `${API.orders.get()}?user_id=${currentUser.uid}`);
     if (!res.ok) throw new Error("Unable to load orders");
 
     const orders = await res.json();
@@ -465,7 +493,7 @@ async function submitAuthForm(event) {
       showToast("Logged in successfully.");
     } else {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await fetch(API.users.register(), {
+      await debugFetch("userRegister", API.users.register(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -515,7 +543,7 @@ async function handleAddBookSubmit(event) {
   }
 
   try {
-    const res = await fetch(API.books.create(), {
+    const res = await debugFetch("bookAdd", API.books.create(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
