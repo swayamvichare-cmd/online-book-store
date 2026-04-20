@@ -543,19 +543,19 @@ async function handleAddBookSubmit(event) {
   }
 
   try {
-    const res = await debugFetch("bookAdd", API.books.create(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        author,
-        price,
-        category,
-        stock: Number.isNaN(stock) ? 0 : stock,
-        description,
-        image_url
-      })
-    });
+const res = await debugFetch("bookAdd", API.books.create(), {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({
+         title,
+         author,
+         price,
+         category,
+         stock: Number.isNaN(stock) ? 0 : stock,
+         description,
+         image_url: image_url || null
+       })
+     });
 
     const data = await res.json();
     if (!res.ok) {
