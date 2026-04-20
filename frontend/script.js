@@ -140,6 +140,9 @@ function updateCartQuantity(bookId, newQuantity) {
   }
 }
 
+window.removeFromCart = removeFromCart;
+window.updateCartQuantity = updateCartQuantity;
+
 function renderCart() {
   const cartList = $("cart-list");
   const cartTotal = $("cart-total");
@@ -229,6 +232,10 @@ function openModal(modalId) {
 function closeModal(modalId) {
   $(modalId).classList.add("hidden");
 }
+
+// Expose helpers globally so module scope doesn't break inline event handlers / old deployments.
+window.closeModal = closeModal;
+window.openModal = openModal;
 
 function setActiveTab(tab) {
   activeTab = tab;
